@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Auth Test</title>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-size: cover !important;
+            background-repeat: no-repeat !important;
+            background: repeating-linear-gradient(135deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 2px,transparent 2px, transparent 4px),linear-gradient(45deg, rgb(18, 105, 233),rgb(166, 255, 155));
+        }
+
+        .form-container {
+            width: 800px;
+            padding: 16px;
+            background-color: white;
+            margin: 0 auto;
+            margin-top: 100px;
+            border: 1px solid black;
+            border-radius: 4px;
+        }
+    
+        input {
+            width: 100%;
+            padding: 15px 0 15px 15px;
+            margin: 5px 0 22px 0;
+            display: inline-block;
+            border: none;
+            background: #f1f1f1;
+        }
+    
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            opacity: 0.9;
+        }
+    
+        button:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <form class="signup form-container">
+        <label for="email"><b>Email</b></label>
+        <input type="email" placeholder="Enter Email" name="email" id="signup-email" autocomplete="username" required>
+    
+        <label for="password"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="password" id="signup-password" autocomplete="current-password" required>
+    
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <form class="signin form-container">
+        <label for="email"><b>Email</b></label>
+        <input type="email" placeholder="Enter Email" name="email" id="signin-email" autocomplete="username" required>
+    
+        <label for="password"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="password" id="signin-password" autocomplete="current-password" required>
+    
+        <button type="submit">Sign In</button>
+    </form>
+    
+    <script type="module" defer>
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: `AIzaSyCIlJDDYbw1A-_ivEga_SYTfQeaL2Djcbw`,
+            authDomain: `test-auth-fdb53.firebaseapp.com`,
+            projectId: `test-auth-fdb53`,
+            storageBucket: `test-auth-fdb53.appspot.com`,
+            messagingSenderId: `920777051425`,
+            appId: `1:920777051425:web:62d11dc989aadcddb78260`
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // Initialize Firebase Authentication and get a reference to the service
+        const auth = getAuth(app);
+
+        let signupForm = document.querySelector(`.signup`);
+        let signinForm = document.querySelector(`.signin`);
+
+        signupForm.addEventListener(`submit`, formSubmitEvent => {
+            formSubmitEvent.preventDefault();
+            
+            let email = document.getElementById(`signup-email`).value;
+            let password = document.getElementById(`signup-password`).value;
+
+            createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
+                const user = userCredential.user;
+
+                console.log(`User Signed Up`, user);
+
+            }).catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+
+                console.log({
+                    error,
+                    errorCode,
+                    errorMessage
+                });
+            });
+        });
+
+        signinForm.addEventListener(`submit`, formSubmitEvent => {
+            formSubmitEvent.preventDefault();
+            
+            let email = document.getElementById(`signin-email`).value;
+            let password = document.getElementById(`signin-password`).value;
+
+            signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+                const user = userCredential.user;
+
+                console.log(`User Signed In`, user);
+
+            }).catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+
+                console.log({
+                    error,
+                    errorCode,
+                    errorMessage
+                });
+            });
+        });
+    </script>
+</body>
+</html>
