@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Auth Test</title>
+    <link rel="icon" href="./PiratechsIcon.ico" type="image/x-icon">
+    <title>Firebase Authentication</title>
     <style>
         *, *::before, *::after {
             margin: 0;
@@ -13,10 +14,50 @@
         }
 
         body {
-            min-height: 100vh;
+            width: 100%;
+            font-family: 'Montserrat';
             background-size: cover !important;
             background-repeat: no-repeat !important;
             background: repeating-linear-gradient(135deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 2px,transparent 2px, transparent 4px),linear-gradient(45deg, rgb(18, 105, 233),rgb(166, 255, 155));
+        }
+
+        header {
+            display: flex;
+            font-size: 25px;
+            font-weight: 600;
+            min-height: 20vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .inner {
+            width: 85%;
+            display: flex;
+            margin: 0 auto;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .logoutLink {
+            cursor: pointer;
+        }
+
+        h2 {
+            padding: 5px 0 25px;
+        }
+
+        .forms {
+            width: 85%;
+            display: flex;
+            margin: 0 auto;
+            min-height: 80vh;
+            align-items: flex-start;
+            justify-content: space-between;
         }
 
         .form-container {
@@ -39,41 +80,71 @@
         }
     
         button {
-            background-color: #4CAF50;
-            color: white;
+            font-family: 'Montserrat';
+            background: #4CAF50;
             padding: 14px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
             margin: 8px 0;
             border: none;
-            cursor: pointer;
-            width: 100%;
             opacity: 0.9;
+            width: 100%;
         }
     
         button:hover {
             opacity: 1;
         }
+
+        @media (max-width: 867px) {
+            h1 {
+                font-size: 25px;
+            }
+            a, .logoutLink {
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 <body>
-    <form class="signup form-container">
-        <label for="email"><b>Email</b></label>
-        <input type="email" placeholder="Enter Email" name="email" id="signup-email" autocomplete="username" required>
-    
-        <label for="password"><b>Password</b></label>
-        <input type="password" placeholder="Enter Password" name="password" id="signup-password" autocomplete="current-password" required>
-    
-        <button type="submit">Sign Up</button>
-    </form>
 
-    <form class="signin form-container">
-        <label for="email"><b>Email</b></label>
-        <input type="email" placeholder="Enter Email" name="email" id="signin-email" autocomplete="username" required>
+    <header>
+        <div class="inner">
+            <nav>
+                <a href="/">Home</a>
+            </nav>
+            <div class="headerMid">
+                <h1>Firebase Auth</h1>
+            </div>
+            <div class="headerEnd">
+                <span class="logoutLink">Log Out</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="forms">
+        <form class="signup form-container">
+            <h2>Sign Up</h2>
+            <label for="email"><b>Email Address</b></label>
+            <input type="email" placeholder="Enter Email Address" name="email" id="signup-email" autocomplete="username" required>
+        
+            <label for="password"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="password" id="signup-password" autocomplete="current-password" required>
+        
+            <button type="submit">Sign Up</button>
+        </form>
     
-        <label for="password"><b>Password</b></label>
-        <input type="password" placeholder="Enter Password" name="password" id="signin-password" autocomplete="current-password" required>
-    
-        <button type="submit">Sign In</button>
-    </form>
+        <form class="signin form-container">
+            <h2>Sign In</h2>
+            <label for="email"><b>Email Address</b></label>
+            <input type="email" placeholder="Enter Email Address" name="email" id="signin-email" autocomplete="username" required>
+        
+            <label for="password"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="password" id="signin-password" autocomplete="current-password" required>
+        
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
     
     <script type="module" defer>
         // Import the functions you need from the SDKs you need
