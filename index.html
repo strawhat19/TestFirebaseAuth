@@ -51,6 +51,19 @@
             padding: 5px 0 25px;
         }
 
+        h3 {
+            color: white;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        main {
+            width: 85%;
+            display: flex;
+            margin: 0 auto;
+            min-height: 80vh;
+        }
+
         .forms {
             width: 85%;
             display: flex;
@@ -96,6 +109,28 @@
             opacity: 1;
         }
 
+        .loadingMessage {
+            display: flex;
+            grid-gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .spinner {
+            width: auto;
+            margin: 0 5px;
+            max-height: 55px;
+            border-radius: 50%; 
+            border: 16px solid #4CAF50;
+            border-top: 16px solid #3498db; 
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         @media (max-width: 867px) {
             h1 {
                 font-size: 25px;
@@ -122,31 +157,166 @@
         </div>
     </header>
 
-    <div class="forms">
-        <form class="signup form-container">
-            <h2>Sign Up</h2>
-            <label for="email"><b>Email Address</b></label>
-            <input type="email" placeholder="Enter Email Address" name="email" id="signup-email" autocomplete="username" required>
+    <main>
+        <section class="forms">
+            <form class="signup form-container">
+                <h2>Sign Up</h2>
+                <label for="email"><b>Email Address</b></label>
+                <input type="email" placeholder="Enter Email Address" name="email" id="signup-email" autocomplete="username" required>
+            
+                <label for="password"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="password" id="signup-password" autocomplete="current-password" required>
+            
+                <button type="submit">Sign Up</button>
+            </form>
         
-            <label for="password"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="password" id="signup-password" autocomplete="current-password" required>
-        
-            <button type="submit">Sign Up</button>
-        </form>
+            <form class="signin form-container">
+                <h2>Sign In</h2>
+                <label for="email"><b>Email Address</b></label>
+                <input type="email" placeholder="Enter Email Address" name="email" id="signin-email" autocomplete="username" required>
+            
+                <label for="password"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="password" id="signin-password" autocomplete="current-password" required>
+            
+                <button type="submit">Sign In</button>
+            </form>
+        </section>
     
-        <form class="signin form-container">
-            <h2>Sign In</h2>
-            <label for="email"><b>Email Address</b></label>
-            <input type="email" placeholder="Enter Email Address" name="email" id="signin-email" autocomplete="username" required>
-        
-            <label for="password"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="password" id="signin-password" autocomplete="current-password" required>
-        
-            <button type="submit">Sign In</button>
-        </form>
-    </div>
+        <section class="profile"><h3>Profile</h3></section>
+    </main>
     
     <script type="module" defer>
+
+        let getDom = (selector) => document.querySelector(selector);
+        let user = JSON.parse(localStorage.getItem(`user`));
+        let logoutLink = getDom(`.logoutLink`);
+        localStorage.removeItem(`alertOpen`);
+        let profile = getDom(`.profile`);
+        let forms = getDom(`.forms`);
+
+        if (user) {
+            forms.remove();
+            console.log(`User`, user);
+            profile.innerHTML = `<h3>${user.emailAddress}</h3>`;
+        } else {
+            profile.style.display = `none`;
+        }
+
+        const formatDate = (timestamp) => {
+            // Create a new Date object from the timestamp
+            let date;
+            if (typeof timestamp === `number`) {
+                // If the timestamp is a number, it's in seconds since the Unix epoch
+                date = new Date(timestamp * 1000);
+            } else {
+                // Otherwise, it's a string that JavaScript's Date can parse
+                date = new Date(timestamp);
+            }
+
+            // Adjust for EST (UTC-5)
+            date.setHours(date.getHours() - 5);
+
+            // Format the date
+            const options = { weekday: `short`, year: `numeric`, month: `short`, day: `numeric`, hour: `2-digit`, minute: `2-digit`, second: `2-digit`, hour12: true };
+            const formattedDate = date.toLocaleString(`en-US`, options);
+
+            // Return the formatted date
+            return `${formattedDate} EST`;
+        }
+
+        const showAlert = (element, width, height) => {
+            // Check if alert is already open
+            let isAlertOpen = JSON.parse(localStorage.getItem(`alertOpen`)) == true;
+            if (isAlertOpen) return;
+
+            // Create the overlay
+            let overlay = document.createElement(`div`);
+            overlay.className = `overlay`;
+            document.body.appendChild(overlay);
+
+            // Create the alert
+            let alert = document.createElement(`div`);
+            alert.className = `alert`;
+            alert.innerHTML = element;
+            overlay.appendChild(alert);
+
+            // Add transition styles for smooth fade-in
+            overlay.style.opacity = 0;
+            overlay.style.top = `0`;
+            overlay.style.right = `0`;
+            overlay.style.bottom = `0`;
+            overlay.style.left = `0`;
+            overlay.style.margin = `auto`;
+            overlay.style.display = `flex`;
+            overlay.style.position = `fixed`;
+            overlay.style.alignItems = `center`;
+            overlay.style.justifyContent = `center`;
+            overlay.style.transition = `opacity 0.3s ease-out`;
+
+            alert.style.opacity = 0;
+            alert.style.width = width;
+            alert.style.height = height;
+            alert.style.padding = `2em`;
+            alert.style.display = `flex`;
+            alert.style.borderRadius = `4px`;
+            alert.style.alignItems = `center`;
+            alert.style.justifyContent = `center`;
+            alert.style.backdropFilter = `blur(5px)`;
+            alert.style.transition = `opacity 0.3s ease-out`;
+            alert.style.background = `rgba(0, 40, 46, 0.5)`;
+
+            // Flag alert as open
+            localStorage.setItem(`alertOpen`, true);
+
+            // Trigger reflow to ensure the styles are applied before animating
+            void alert.offsetWidth;
+
+            // Fade in the alert
+            overlay.style.opacity = 1;
+            alert.style.opacity = 1;
+
+            // Add a click event listener to the overlay to dismiss the alert
+            overlay.addEventListener(`click`, () => {
+                // Fade out the alert and overlay
+                alert.style.opacity = 0;
+                overlay.style.opacity = 0;
+
+                // Remove the alert and overlay from the DOM after the animation is complete
+                setTimeout(() => {
+                    document.body.removeChild(overlay);
+                    localStorage.setItem(`alertOpen`, false);
+                }, 300);
+            });
+        }
+
+        const dismissAlert = () => {
+            let isAlertOpen = JSON.parse(localStorage.getItem(`alertOpen`)) == true;
+            if (!isAlertOpen) return;
+            let overlay = getDom(`.overlay`);
+            let alert = getDom(`.alert`);
+            // Fade out the alert and overlay
+            alert.style.opacity = 0;
+            overlay.style.opacity = 0;
+
+            // Remove the alert and overlay from the DOM after the animation is complete
+            setTimeout(() => {
+                document.body.removeChild(overlay);
+                localStorage.setItem(`alertOpen`, false);
+            }, 300);
+        }
+
+        if (logoutLink) {
+            logoutLink.addEventListener(`click`, ClickEvent => {
+                showAlert(`<div class="loadingMessage"><div class="spinner"></div><h3>Logging Out</h3></div>`, `35%`, `15%`);
+
+                setTimeout(() => {
+                    dismissAlert();
+                    localStorage.removeItem(`user`);
+                    window.location.reload();
+                }, 1000);
+            })
+        }
+
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
@@ -172,51 +342,137 @@
         let signupForm = document.querySelector(`.signup`);
         let signinForm = document.querySelector(`.signin`);
 
-        signupForm.addEventListener(`submit`, formSubmitEvent => {
-            formSubmitEvent.preventDefault();
-            
-            let email = document.getElementById(`signup-email`).value;
-            let password = document.getElementById(`signup-password`).value;
+        if (signupForm) {
+            signupForm.addEventListener(`submit`, formSubmitEvent => {
+                formSubmitEvent.preventDefault();
+                
+                let email = document.getElementById(`signup-email`).value;
+                let password = document.getElementById(`signup-password`).value;
 
-            createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
-                const user = userCredential.user;
+                createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
+                    const firebaseUser = userCredential.user;
+                    let { uid, email, emailVerified, photoURL } = firebaseUser;
+                    let { creationTime, lastSignInTime } = firebaseUser.metadata;
+                    let { lastRefreshAt, passwordHash, passwordUpdatedAt, validSince } = firebaseUser.reloadUserInfo;
 
-                console.log(`User Signed Up`, user);
+                    user = {
+                        uid,
+                        id: uid,
+                        uuid: uid,
+                        firebaseUser,
+                        emailVerified,
+                        userCredential,
+                        image: photoURL,
+                        emailAddress: email,
+                        password: passwordHash,
+                        created: formatDate(creationTime),
+                        validSince: formatDate(validSince),
+                        lastRefresh: formatDate(lastRefreshAt),
+                        lastSignIn: formatDate(lastSignInTime),
+                        passwordUpdatedAt: formatDate(passwordUpdatedAt),
+                    }
 
-            }).catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
+                    console.log(`User Signed Up`, user);
 
-                console.log({
-                    error,
-                    errorCode,
-                    errorMessage
+                    localStorage.setItem(`user`, JSON.stringify(user));
+                    
+                    showAlert(`<div class="loadingMessage"><div class="spinner"></div><h3>User Signing Up</h3></div>`, `35%`, `15%`);
+
+                    setTimeout(() => {
+                        dismissAlert();
+                        forms.style.display = `none`;
+                        profile.innerHTML = `<h3>${user.emailAddress}</h3>`;
+                        profile.style.display = `flex`;
+                    }, 1000);
+
+                }).catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+
+                    if (errorMessage) {
+                        showAlert(`<div class="loadingMessage"><h3>${errorMessage}</h3></div>`, `50%`, `35%`);
+
+                        if (errorMessage.includes(`email-already-in-use`)) {
+                            getDom(`.loadingMessage h3`).append(`Switching to Log In...`);
+                            
+                            setTimeout(() => {
+                                dismissAlert();
+                                signupForm.style.display = `none`;
+                                getDom(`#signin-email`).value = email;
+                                getDom(`#signin-password`).value = password;
+                                signinForm.style.display = `block`;
+                            }, 1000);
+                        }                        
+                    }
+
+                    // console.log({
+                    //     error,
+                    //     errorCode,
+                    //     errorMessage
+                    // });
                 });
             });
-        });
+        }
 
-        signinForm.addEventListener(`submit`, formSubmitEvent => {
-            formSubmitEvent.preventDefault();
-            
-            let email = document.getElementById(`signin-email`).value;
-            let password = document.getElementById(`signin-password`).value;
+        if (signinForm) {
+            signinForm.addEventListener(`submit`, formSubmitEvent => {
+                formSubmitEvent.preventDefault();
+                
+                let email = document.getElementById(`signin-email`).value;
+                let password = document.getElementById(`signin-password`).value;
 
-            signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
-                const user = userCredential.user;
+                signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+                    const firebaseUser = userCredential.user;
+                    let { uid, email, emailVerified, photoURL } = firebaseUser;
+                    let { creationTime, lastSignInTime } = firebaseUser.metadata;
+                    let { lastRefreshAt, passwordHash, passwordUpdatedAt, validSince } = firebaseUser.reloadUserInfo;
 
-                console.log(`User Signed In`, user);
+                    user = {
+                        uid,
+                        id: uid,
+                        uuid: uid,
+                        firebaseUser,
+                        emailVerified,
+                        userCredential,
+                        image: photoURL,
+                        emailAddress: email,
+                        password: passwordHash,
+                        created: formatDate(creationTime),
+                        validSince: formatDate(validSince),
+                        lastRefresh: formatDate(lastRefreshAt),
+                        lastSignIn: formatDate(lastSignInTime),
+                        passwordUpdatedAt: formatDate(passwordUpdatedAt),
+                    }
 
-            }).catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
+                    console.log(`User Signed In`, user);
 
-                console.log({
-                    error,
-                    errorCode,
-                    errorMessage
+                    localStorage.setItem(`user`, JSON.stringify(user));
+                    
+                    showAlert(`<div class="loadingMessage"><div class="spinner"></div><h3>User Signing In</h3></div>`, `35%`, `15%`);
+
+                    setTimeout(() => {
+                        dismissAlert();
+                        forms.style.display = `none`;
+                        profile.innerHTML = `<h3>${user.emailAddress}</h3>`;
+                        profile.style.display = `flex`;
+                    }, 1000);
+
+                }).catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+
+                    showAlert(`<div class="loadingMessage"><h3>${errorMessage}</h3></div>`, `50%`, `35%`);
+
+                    console.log({
+                        error,
+                        errorCode,
+                        errorMessage
+                    });
                 });
             });
-        });
+            signinForm.style.display = `none`;
+        }
+
     </script>
 </body>
 </html>
